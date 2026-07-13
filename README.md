@@ -359,6 +359,31 @@ GET /posts/search?termo=node
 
 ---
 
+# 🔐 Autenticação
+
+A API utiliza uma autenticação simples por token para simular a validação de usuários.
+
+Todos os endpoints de postagens exigem o envio do seguinte header:
+
+```http
+Authorization: Bearer fiap123
+```
+
+Caso o token não seja informado ou seja inválido, a API retorna:
+
+```http
+401 Unauthorized
+```
+
+Exemplo:
+
+```json
+{
+  "mensagem": "Token não informado."
+}
+```
+---
+
 # 🧪 Testes Automatizados
 
 Durante o desenvolvimento foram criados testes automatizados utilizando **Jest** e **Supertest** para validar o funcionamento da API.
