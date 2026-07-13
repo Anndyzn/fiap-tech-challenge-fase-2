@@ -2,6 +2,8 @@ import request from "supertest";
 import app from "../src/app";
 import { pool } from "../src/database/db";
 
+const tokenValido = "Bearer fiap123";
+
 describe("API de postagens", () => {
   beforeAll(async () => {
     await pool.query(`
@@ -25,9 +27,30 @@ describe("API de postagens", () => {
     await pool.end();
   });
 
+  it("deve retornar 401 quando o token não for informado", async () => {
+    const resposta = await request(app).get("/posts");
+
+    expect(resposta.status).toBe(401);
+    expect(resposta.body).toEqual({
+      mensagem: "Token não informado."
+    });
+  });
+
+  it("deve retornar 401 quando o token for inválido", async () => {
+    const resposta = await request(app)
+      .get("/posts")
+      .set("Authorization", "Bearer token-invalido");
+
+    expect(resposta.status).toBe(401);
+    expect(resposta.body).toEqual({
+      mensagem: "Token inválido."
+    });
+  });
+
   it("deve criar uma nova postagem", async () => {
     const resposta = await request(app)
       .post("/posts")
+      .set("Authorization", tokenValido)
       .send({
         titulo: "Teste de criação",
         conteudo: "Conteúdo do teste automatizado.",
@@ -43,6 +66,7 @@ describe("API de postagens", () => {
   it("não deve criar postagem sem os campos obrigatórios", async () => {
     const resposta = await request(app)
       .post("/posts")
+      .set("Authorization", tokenValido)
       .send({
         titulo: "Post incompleto"
       });
@@ -66,7 +90,9 @@ describe("API de postagens", () => {
       ]
     );
 
-    const resposta = await request(app).get("/posts");
+    const resposta = await request(app)
+      .get("/posts")
+      .set("Authorization", tokenValido);
 
     expect(resposta.status).toBe(200);
     expect(Array.isArray(resposta.body)).toBe(true);
@@ -90,7 +116,9 @@ describe("API de postagens", () => {
 
     const id = resultado.rows[0].id;
 
-    const resposta = await request(app).get(`/posts/${id}`);
+    const resposta = await request(app)
+      .get(`/posts/${id}`)
+      .set("Authorization", tokenValido);
 
     expect(resposta.status).toBe(200);
     expect(resposta.body.id).toBe(id);
@@ -98,7 +126,9 @@ describe("API de postagens", () => {
   });
 
   it("deve retornar 404 ao buscar um ID inexistente", async () => {
-    const resposta = await request(app).get("/posts/999");
+    const resposta = await request(app)
+      .get("/posts/999")
+      .set("Authorization", tokenValido);
 
     expect(resposta.status).toBe(404);
     expect(resposta.body).toEqual({
