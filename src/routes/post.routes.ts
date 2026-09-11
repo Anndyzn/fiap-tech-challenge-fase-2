@@ -13,7 +13,7 @@ import { authMiddleware } from "../middlewares/auth.middleware";
 
 const postRoutes = Router();
 
-// ROTAS PÚBLICAS
+// ROTAS PUBLICAS
 postRoutes.get("/", listarPosts);
 postRoutes.get("/search", buscarPosts);
 postRoutes.get("/:id", buscarPostPorId);
