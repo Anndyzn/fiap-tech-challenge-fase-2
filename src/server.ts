@@ -1,5 +1,8 @@
 import app from "./app";
-import { pool } from "./database/db";
+import {
+  pool,
+  inicializarBanco
+} from "./database/db";
 
 const PORT = process.env.PORT || 4000;
 
@@ -11,6 +14,8 @@ async function iniciarServidor() {
       "PostgreSQL conectado:",
       resultado.rows[0].now
     );
+
+    await inicializarBanco();
 
     app.listen(PORT, () => {
       console.log(`Servidor rodando em http://localhost:${PORT}`);

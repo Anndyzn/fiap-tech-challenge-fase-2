@@ -18,3 +18,19 @@ pool.on("connect", () => {
 pool.on("error", (err) => {
   console.error(" Erro inesperado no PostgreSQL:", err);
 });
+
+export async function inicializarBanco() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS comentarios (
+      id SERIAL PRIMARY KEY,
+      post_id INTEGER NOT NULL
+        REFERENCES posts(id)
+        ON DELETE CASCADE,
+      autor VARCHAR(150) NOT NULL,
+      conteudo TEXT NOT NULL,
+      criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  console.log("Tabela de comentários verificada.");
+}
